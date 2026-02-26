@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculateur LAG GIPG</title>
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 20px;
+    max-width: 500px;
+}
+input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+.result {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Calculateur LAG GIPG</h2>
+
+<label>Distance LOS (m)</label>
+<input type="number" id="distance">
+
+<label>Angle (°)</label>
+<input type="number" id="angle">
+
+<label>Vitesse embarcation (km/h)</label>
+<input type="number" id="speed">
+
+<div class="result">
+Lag (mrad) : <span id="lag">—</span>
+</div>
+
+<script>
+function radians(deg) {
+    return deg * Math.PI / 180;
+}
+
+function calculate() {
+    let distance = parseFloat(document.getElementById("distance").value);
+    let angle = parseFloat(document.getElementById("angle").value);
+    let speed = parseFloat(document.getElementById("speed").value);
+
+    if (!distance || !angle || !speed) return;
+
+    let speed_ms = speed / 3.6;
+    let tof = 1; // valeur temporaire simple (on intégrera ton vrai TOF après)
+    let move = speed_ms * tof;
+
+    let lag = Math.asin(
+        (move * Math.sin(radians(angle))) /
+        Math.sqrt(distance**2 + move**2 - 2*distance*move*Math.cos(radians(angle)))
+    ) * 1000;
+
+    document.getElementById("lag").innerText = lag.toFixed(1);
+}
+
+document.getElementById("distance").addEventListener("input", calculate);
+document.getElementById("angle").addEventListener("input", calculate);
+document.getElementById("speed").addEventListener("input", calculate);
+</script>
+
+</body>
+</html>
